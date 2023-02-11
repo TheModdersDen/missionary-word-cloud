@@ -1,0 +1,5 @@
+python-dotenv>=0.21.1
+wordcloud>=1.8.2.2
+progress>=1.6
+pyinstaller>=5.8.0
+imap-tools>=1.0.0

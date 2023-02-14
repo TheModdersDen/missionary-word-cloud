@@ -171,3 +171,4 @@ ENV/
 tools/
 emails/
 *.png
+logs/

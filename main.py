@@ -40,14 +40,17 @@ logger = getLogger("Missionary Word Cloud Generator")
 
 # Set up logging:
 def setup_logger():
-    basicConfig(level=INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                filename='missionary_word_cloud.log', filemode='w', datefmt='%m/%d/%Y %I:%M:%S %p')
-    if os.getenv("DEBUG").lower == "true" or os.getenv("DEBUG") == 1:
+    # Check to make sure the logs folder exists:
+    if not path.exists(os.getcwd() + os.sep + "logs"):
+        os.mkdir(os.getcwd() + os.sep + "logs")
+    basicConfig(level=INFO, format='%(asctime)s - %(name)s - %(levelname)s:==> %(message)s',
+                filename=os.getcwd() + os.sep + "logs" + os.sep + 'missionary_word_cloud.log', filemode='w', datefmt='%m/%d/%Y %I:%M:%S %p')
+    if os.getenv("WC_DEBUG").lower == "true" or os.getenv("WC_DEBUG") == "1":
         logger.setLevel(DEBUG)
 
 # Receive input from the user:
 def get_input(input_str: str, default: str = None, password: bool = False):
-    if default is None:
+    if default is None and not password:
         return input(input_str)
     if password:
         return getpass.getpass(input_str + " [{}]: ".format(default)) or default
@@ -68,18 +71,30 @@ print("Press enter to continue...")
 input()
 # Variables:
 subfolder = get_input("Enter the subfolder to search: ", default="wordcloud")
+logger.debug(f"Subfolder: {subfolder}")
 cloud_outfile = get_input("Enter the path to save the word cloud: ", default=os.getcwd() + os.sep + "wordcloud.png")
+logger.debug(f"Cloud outfile: {cloud_outfile}")
 email_outpath = get_input("Enter the path to save the emails: ", default=os.getcwd() + os.sep + "emails" + os.sep)
+logger.debug(f"Email outpath: {email_outpath}")
 email = get_input("Enter your Gmail address: ", password=False)
+logger.debug(f"Email: {email}")
 password = get_input("Enter your Gmail App password: ", password=True)
+logger.debug(f"Password: {password}")
 sender_address = get_input("Enter the sender's email address: ", default="missionary@missionary.org")
+logger.debug(f"Sender address: {sender_address}")
 email_search_topic = get_input("Enter a query to help filter the emails: ", default=None)
+logger.debug(f"Email search topic: {email_search_topic}")
 ignore_replies = confirm("Ignore replies?", default=True)
+logger.debug(f"Ignore replies: {ignore_replies}")
 
 # Get the current date and time:
 def get_date_time() -> str:
     now = datetime.now(get_timezone())
-    return now.strftime("%m/%d/%Y, %H:%M:%S")
+    new_now = now.strftime("%m/%d/%Y, %H:%M:%S")
+    current_tz = get_timezone()
+    logger.debug(f"Now: {new_now}")
+    logger.debug(f"Timezone: {current_tz}")
+    return new_now
 
 # Get the local timezone:
 def get_timezone() -> datetime.tzinfo:

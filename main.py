@@ -69,7 +69,7 @@ input()
 # Variables:
 subfolder = get_input("Enter the subfolder to search: ", default="wordcloud")
 cloud_outfile = get_input("Enter the path to save the word cloud: ", default=os.getcwd() + os.sep + "wordcloud.png")
-email_outpath = get_input("Enter the path to save the emails: ", default=os.getcwd() + os.sep + "emails/")
+email_outpath = get_input("Enter the path to save the emails: ", default=os.getcwd() + os.sep + "emails" + os.sep)
 email = get_input("Enter your Gmail address: ", password=False)
 password = get_input("Enter your Gmail App password: ", password=True)
 sender_address = get_input("Enter the sender's email address: ", default="missionary@missionary.org")

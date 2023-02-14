@@ -8,7 +8,7 @@ import os
 from os import path
 from time import sleep
 from datetime import datetime
-from logging import basicConfig, getLogger, INFO, DEBUG, ERROR, WARNING
+from logging import basicConfig, getLogger, INFO, DEBUG
 
 # Third-party modules:
 from dotenv import load_dotenv
@@ -69,21 +69,29 @@ print("If you have any questions, please contact me at admin@themoddersden.com."
 print("Thank you for using this program!\n")
 print("Press enter to continue...")
 input()
+
 # Variables:
 subfolder = get_input("Enter the subfolder to search: ", default="wordcloud")
 logger.debug(f"Subfolder: {subfolder}")
+
 cloud_outfile = get_input("Enter the path to save the word cloud: ", default=os.getcwd() + os.sep + "wordcloud.png")
 logger.debug(f"Cloud outfile: {cloud_outfile}")
+
 email_outpath = get_input("Enter the path to save the emails: ", default=os.getcwd() + os.sep + "emails" + os.sep)
 logger.debug(f"Email outpath: {email_outpath}")
+
 email = get_input("Enter your Gmail address: ", password=False)
 logger.debug(f"Email: {email}")
+
 password = get_input("Enter your Gmail App password: ", password=True)
-logger.debug(f"Password: {password}")
+logger.debug(f"Password hash: {hash(password)}")
+
 sender_address = get_input("Enter the sender's email address: ", default="missionary@missionary.org")
 logger.debug(f"Sender address: {sender_address}")
+
 email_search_topic = get_input("Enter a query to help filter the emails: ", default=None)
 logger.debug(f"Email search topic: {email_search_topic}")
+
 ignore_replies = confirm("Ignore replies?", default=True)
 logger.debug(f"Ignore replies: {ignore_replies}")
 

@@ -19,6 +19,8 @@ from wordcloud import WordCloud
 load_dotenv()
 
 # Prompt the user for confirmation:
+
+
 def confirm(prompt: str, default: bool = False):
     if default is None:
         prompt += " [y/n]: "
@@ -36,6 +38,8 @@ def confirm(prompt: str, default: bool = False):
             return False
         else:
             print("Please respond with 'yes' or 'no' (or 'y' or 'n').\n")
+
+
 logger = getLogger("Missionary Word Cloud Generator")
 
 # Set up logging:
@@ -56,7 +60,8 @@ def get_input(input_str: str, default: str = None, password: bool = False):
         return getpass.getpass(input_str + " [{}]: ".format(default)) or default
     else:
         return input(input_str + " [{}]: ".format(default)) or default
-    
+
+
 setup_logger()
 print("Welcome to the Missionary Word Cloud Generator!\n")
 print("This program will generate a word cloud from the emails in your specified folder.")
@@ -74,10 +79,12 @@ input()
 subfolder = get_input("Enter the subfolder to search: ", default="wordcloud")
 logger.debug(f"Subfolder: {subfolder}")
 
-cloud_outfile = get_input("Enter the path to save the word cloud: ", default=os.getcwd() + os.sep + "wordcloud.png")
+cloud_outfile = get_input("Enter the path to save the word cloud: ",
+                          default=os.getcwd() + os.sep + "wordcloud.png")
 logger.debug(f"Cloud outfile: {cloud_outfile}")
 
-email_outpath = get_input("Enter the path to save the emails: ", default=os.getcwd() + os.sep + "emails" + os.sep)
+email_outpath = get_input("Enter the path to save the emails: ",
+                          default=os.getcwd() + os.sep + "emails" + os.sep)
 logger.debug(f"Email outpath: {email_outpath}")
 
 email = get_input("Enter your Gmail address: ", password=False)
@@ -86,16 +93,20 @@ logger.debug(f"Email: {email}")
 password = get_input("Enter your Gmail App password: ", password=True)
 logger.debug(f"Password hash: {hash(password)}")
 
-sender_address = get_input("Enter the sender's email address: ", default="missionary@missionary.org")
+sender_address = get_input(
+    "Enter the sender's email address: ", default="missionary@missionary.org")
 logger.debug(f"Sender address: {sender_address}")
 
-email_search_topic = get_input("Enter a query to help filter the emails: ", default=None)
+email_search_topic = get_input(
+    "Enter a query to help filter the emails: ", default=None)
 logger.debug(f"Email search topic: {email_search_topic}")
 
 ignore_replies = confirm("Ignore replies?", default=True)
 logger.debug(f"Ignore replies: {ignore_replies}")
 
 # Get the current date and time:
+
+
 def get_date_time() -> str:
     now = datetime.now(get_timezone())
     new_now = now.strftime("%m/%d/%Y, %H:%M:%S")
@@ -105,28 +116,29 @@ def get_date_time() -> str:
     return new_now
 
 # Get the local timezone:
+
+
 def get_timezone() -> datetime.tzinfo:
     return datetime.now().astimezone().tzinfo
 
 # Get all emails from the specified folder:
+
+
 def get_emails(sub_folder: str = None) -> list:
 
     my_messages = []
 
     # Connect to the mailbox:
     with MailBox('imap.gmail.com', timeout=90).login(email, password) as mailbox:
-        with Bar('Processing Emails') as bar:
-            for msg in mailbox.fetch(mark_seen=False):
-                mailbox.folder.set(sub_folder)
-                if msg.from_ == os.getenv(sender_address) and msg.subject.startswith(email_search_topic):
-                    logger.debug(msg.from_, msg.subject)
-                    if ignore_replies and msg.subject.startswith("Re:") or msg.subject.startswith("RE:"):
-                        logger.debug("Ignoring reply...")
-                    else:
-                        logger.debug(msg.date, msg.subject,
-                                     len(msg.text or msg.html))
-                        my_messages.append(msg.text or msg.html)
-                        bar.next()
+        for msg in mailbox.fetch(mark_seen=False):
+            mailbox.folder.set(sub_folder)
+            if msg.from_ == sender_address and msg.subject.startswith(email_search_topic):
+                if ignore_replies and msg.subject.startswith("Re:") or msg.subject.startswith("RE:"):
+                    logger.debug("Ignoring reply...")
+                else:
+                    logger.debug(msg.date.strftime('%m/%d/%Y %I:%M:%S %p') + " " + msg.subject + " " + str(
+                            len(msg.text or msg.html)))
+                my_messages.append(msg.text or msg.html)
 
         # Return the list of messages:
         return my_messages
